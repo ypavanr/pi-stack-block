@@ -58,6 +58,23 @@ async function loadBlocks() {
   }
 }
 
+function toggle(id) {
+  expandedId = expandedId === id ? null : id;
+}
+
+async function del(id) {
+  if (!confirm("Delete this block?")) return;
+  try {
+    await api.delete(`/blocks/${id}`);
+    blocks = blocks.filter(b => b.id !== id);
+  } catch (e) {
+    alert(
+      (e && e.response && e.response.data && e.response.data.error) ||
+      e.message ||
+      "Delete failed"
+    );
+  }
+}
 
   async function createBlock() {
     createError = "";
@@ -158,7 +175,12 @@ async function loadBlocks() {
 {/if}
 
 {#if showCreate}
-  <div class="backdrop" on:click={closeCreate}/>
+<button
+  class="backdrop"
+  type="button"
+  on:click={closeCreate}
+  aria-label="Close dialog"
+/>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="create-title" on:click|stopPropagation>
     <h2 id="create-title">Create Block</h2>
     <form on:submit|preventDefault={createBlock}>
@@ -254,8 +276,7 @@ async function loadBlocks() {
   .modal {
     position: fixed; inset: 0; display: grid; place-items: center; z-index: 40;
   }
-  .modal > form, .modal > div {
-  }
+ 
   .modal .actions {
     display: flex; gap: .6rem; justify-content: flex-end; margin-top: .75rem;
   }
@@ -298,5 +319,13 @@ async function loadBlocks() {
   cursor: pointer;
 }
 .tag:focus-visible { outline: 2px solid #4d90fe; outline-offset: 2px; }
+.backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 30;
+  border: 0;
+  padding: 0;
+}
+.backdrop:focus { outline: none; }
 
 </style>
