@@ -2,6 +2,10 @@
 	<h1><span>STACK</span> <span class="black">BLOCK</span></h1>
 </main>
 
+<script>
+	
+</script>
+
 <style>
 	main {
 		text-align: center;

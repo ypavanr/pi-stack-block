@@ -3,7 +3,7 @@ PRAGMA journal_mode = WAL;
 PRAGMA synchronous = FULL;
 
 CREATE TABLE IF NOT EXISTS blocks (
-  id       INTEGER PRIMARY KEY,     
+  id       INTEGER PRIMARY KEY,
   question TEXT NOT NULL,
   answer   TEXT NOT NULL
 );
@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS block_tags (
 CREATE INDEX IF NOT EXISTS idx_block_tags_block_id ON block_tags (block_id);
 CREATE INDEX IF NOT EXISTS idx_block_tags_tag_id   ON block_tags (tag_id);
 
+CREATE UNIQUE INDEX IF NOT EXISTS ux_blocks_question_answer_nocase
+ON blocks (question COLLATE NOCASE, answer COLLATE NOCASE);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tags_name_nocase
+ON tags (name COLLATE NOCASE);
 
 CREATE VIRTUAL TABLE IF NOT EXISTS blocks_fts
 USING fts5(
