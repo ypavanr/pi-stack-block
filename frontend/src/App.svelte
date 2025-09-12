@@ -24,37 +24,40 @@
     form = { question: "", answer: "", tags: "" };
   }
 
-  async function loadBlocks() {
-    loading = true; errorMsg = ""; expandedId = null;
-    try {
-      const tags = tagsInput.split(",").map(s => s.trim()).filter(Boolean).join(",");
-      const endpoint = tags ? "/blocks/by-tags" : "/get-all-blocks"; 
-      const params = {};
-      if (tags) params.tags = tags;
-      if (q.trim() && !tags) params.q = q.trim();
+async function loadBlocks() {
+  loading = true; errorMsg = ""; expandedId = null;
+  try {
+    const tags = tagsInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean)
+      .join(",");
 
-      const res = await api.get(endpoint, { params });
-      blocks = res.data;
-    } catch (e) {
-      errorMsg = (e && e.response && e.response.data && e.response.data.error) || e.message || "Failed to load blocks";
-    } finally {
-      loading = false;
+  
+    let endpoint = "/get-all-blocks";
+    const params = {};
+
+    if (tags) {
+      endpoint = "/blocks/by-tags";
+      params.tags = tags;
+    } else if (q.trim()) {
+      endpoint = "/blocks/search";
+      params.q = q.trim();
+      params.mode = "any"; 
     }
-  }
 
-  function toggle(id) {
-    expandedId = expandedId === id ? null : id;
+    const res = await api.get(endpoint, { params });
+    blocks = res.data;
+  } catch (e) {
+    errorMsg =
+      (e && e.response && e.response.data && e.response.data.error) ||
+      e.message ||
+      "Failed to load blocks";
+  } finally {
+    loading = false;
   }
+}
 
-  async function del(id) {
-    if (!confirm("Delete this block?")) return;
-    try {
-      await api.delete(`/blocks/${id}`); 
-      blocks = blocks.filter(b => b.id !== id);
-    } catch (e) {
-      alert((e && e.response && e.response.data && e.response.data.error) || e.message || "Delete failed");
-    }
-  }
 
   async function createBlock() {
     createError = "";
