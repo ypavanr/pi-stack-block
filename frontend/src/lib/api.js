@@ -1,9 +1,12 @@
 import axios from "axios";
 
-const baseURL =  "http://127.0.0.1:5000";
+const isDev =
+  typeof window !== "undefined" &&
+  (location.hostname === "localhost" || location.hostname === "127.0.0.1");
+
+const baseURL = isDev ? "http://127.0.0.1:5000" : "/api";
 
 export const api = axios.create({
   baseURL,
-  timeout: 10000,
-  withCredentials: false
+  timeout: 10000
 });
