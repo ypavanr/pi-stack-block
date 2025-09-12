@@ -8,16 +8,21 @@ from flask_cors import CORS
 
 app = Flask(__name__, instance_relative_config=True)
 
-CORS(app,
-     resources={r"/**": {"origins": [
-         "http://localhost:5173",
-         "http://127.0.0.1:5173",
-         " http://localhost:8080",
-         "http://127.0.0.1:3000",
-         " http://192.168.68.107:8080",       
-        
-     ]}},
-     supports_credentials=True)
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": [
+                "http://localhost:8080",
+                "http://127.0.0.1:8080",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://192.168.68.107:8080",
+            ]
+        }
+    },
+     supports_credentials=True  
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent    
 INSTANCE_DIR = BASE_DIR / "instance"                 
