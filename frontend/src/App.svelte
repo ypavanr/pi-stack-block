@@ -7,11 +7,9 @@
   let errorMsg = "";
   let expandedId = null;
 
-  // search controls
   let q = "";
   let tagsInput = "";
 
-  // create modal state
   let showCreate = false;
   let creating = false;
   let createError = "";
@@ -30,7 +28,7 @@
     loading = true; errorMsg = ""; expandedId = null;
     try {
       const tags = tagsInput.split(",").map(s => s.trim()).filter(Boolean).join(",");
-      const endpoint = tags ? "/blocks/by-tags" : "/get-all-blocks"; // keep your current routes
+      const endpoint = tags ? "/blocks/by-tags" : "/get-all-blocks"; 
       const params = {};
       if (tags) params.tags = tags;
       if (q.trim() && !tags) params.q = q.trim();
@@ -51,7 +49,7 @@
   async function del(id) {
     if (!confirm("Delete this block?")) return;
     try {
-      await api.delete(`/blocks/${id}`); // adjust if your route is different
+      await api.delete(`/blocks/${id}`); 
       blocks = blocks.filter(b => b.id !== id);
     } catch (e) {
       alert((e && e.response && e.response.data && e.response.data.error) || e.message || "Delete failed");
@@ -80,7 +78,6 @@
     }
   }
 
-  // Close modal on Escape
   function onKeydown(e) {
     if (showCreate && e.key === "Escape") closeCreate();
   }
@@ -247,7 +244,6 @@
   .err { color: #b00020; margin: .25rem 0; }
   .danger { margin-top: .6rem; border: 1px solid #f0c0c0; background: #ffecec; border-radius: 8px; padding: .35rem .7rem; cursor: pointer; }
 
-  /* Modal */
   .backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,.45);
     z-index: 30;
@@ -275,4 +271,29 @@
     background: #22c55e; border-color: #16a34a; color: #fff; font-weight: 600;
   }
   .modal .primary[disabled] { opacity: .7; cursor: not-allowed; }
+  .card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  padding: 1rem;
+  transition: transform .12s ease, box-shadow .12s ease;
+  cursor: pointer;
+}
+.card:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+.card:focus-visible { outline: 2px solid #4d90fe; outline-offset: 2px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .25rem; }
+.tag {
+  font-size: .8rem;
+  padding: .15rem .45rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  cursor: pointer;
+}
+.tag:focus-visible { outline: 2px solid #4d90fe; outline-offset: 2px; }
+
 </style>
