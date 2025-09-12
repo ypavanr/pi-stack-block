@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, g
 import sqlite3, os
 from pathlib import Path
-from services.blocks import create_block,get_all_blocks,get_all_tags,get_blocks_by_all_tags,delete_block_by_id
+from services.blocks import create_block,get_all_blocks,get_all_tags,get_blocks_by_all_tags,delete_block_by_id,search_blocks_by_question
 from flask_cors import CORS
 
 
@@ -110,4 +110,17 @@ def route_delete_block(block_id):
         return jsonify({"error": "not found"}), 404
     except Exception:
         app.logger.exception("DELETE /blocks/<id> failed")
+        return jsonify({"error": "internal server error"}), 500
+    
+@app.get("/blocks/search")
+def route_search_blocks():
+    q = request.args.get("q", "", type=str)
+    mode = request.args.get("mode", "any")  # "any" | "all"
+    limit = request.args.get("limit", 100, type=int)
+    offset = request.args.get("offset", 0, type=int)
+    try:
+        data = search_blocks_by_question(get_db(), q, mode=mode, limit=limit, offset=offset)
+        return jsonify(data), 200
+    except Exception:
+        app.logger.exception("GET /blocks/search failed")
         return jsonify({"error": "internal server error"}), 500

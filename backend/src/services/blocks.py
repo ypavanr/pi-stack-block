@@ -1,6 +1,6 @@
 from typing import Iterable, Dict, Any, List, Optional
 import sqlite3
-
+import re
 def _normalize_tags(tags: Optional[Iterable[str] | str]) -> List[str]:
     if tags is None:
         return []
@@ -183,3 +183,49 @@ def delete_block_by_id(conn: sqlite3.Connection, block_id: int) -> bool:
     except Exception:
         conn.rollback()
         raise
+
+
+
+def _fts_match_from_text(q: str, mode: str = "any") -> str:
+    s = (q or "").strip()
+    if not s:
+        return ""
+    if any(op in s for op in ['"', "'", " AND ", " OR ", " NOT ", "NEAR/", "*"]):
+        return s
+    tokens = re.findall(r"\w+", s.lower())
+    if not tokens:
+        return ""
+    op = " OR " if mode.lower() == "any" else " AND "
+    return op.join(tokens)
+
+def search_blocks_by_question(conn, q: str, *, mode: str = "any", limit: int = 100, offset: int = 0):
+    match = _fts_match_from_text(q, mode=mode)
+    if not match:
+        return []
+
+    base_sql = """
+    SELECT b.id, b.question, b.answer,
+           GROUP_CONCAT(DISTINCT t.name) AS tag_csv
+    FROM blocks_fts
+    JOIN blocks b           ON b.id = blocks_fts.rowid
+    LEFT JOIN block_tags bt ON bt.block_id = b.id
+    LEFT JOIN tags t        ON t.id = bt.tag_id
+    WHERE blocks_fts MATCH ?
+    GROUP BY b.id
+    ORDER BY b.id DESC
+    LIMIT ? OFFSET ?;
+    """
+
+    cur = conn.cursor()
+    try:
+        cur.execute(base_sql, (match, limit, offset))
+    except sqlite3.OperationalError:
+        phrase = f"\"{q.replace('\"', '\"\"')}\""
+        cur.execute(base_sql, (phrase, limit, offset))
+
+    rows = cur.fetchall()
+    results = []
+    for bid, question, answer, tag_csv in rows:
+        tags = [s for s in (tag_csv or "").split(",") if s]
+        results.append({"id": bid, "question": question, "answer": answer, "tags": tags})
+    return results
