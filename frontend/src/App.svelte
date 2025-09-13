@@ -23,6 +23,10 @@
     showCreate = false;
     form = { question: "", answer: "", tags: "" };
   }
+  function formatAnswer(s) {
+    if (!s) return '';
+   return s.replace(/([.;?!])(?!\s*$)\s*/g, '$1\n');
+  }
 
 async function loadBlocks() {
   loading = true; errorMsg = ""; expandedId = null;
@@ -161,7 +165,10 @@ async function del(id) {
     </div>
 
     {#if expandedId === b.id}
-      <div id={"block-" + b.id} class="ans">{b.answer}</div>
+      <div id={"block-" + b.id} class="ans" style="white-space: pre-line;">
+  {formatAnswer(b.answer)}
+</div>
+
       <button class="danger" type="button" on:click|stopPropagation={() => del(b.id)}>
         Delete
       </button>
