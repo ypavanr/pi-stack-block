@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://gi-any-birds-suggestion.trycloudflare.com/api/$1"
+      "destination": "https://gary-reported-integrate-replacing.trycloudflare.com/api/$1"
     }
   ]
 }
