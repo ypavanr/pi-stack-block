@@ -25,7 +25,7 @@
   }
   function formatAnswer(s) {
     if (!s) return '';
-   return s.replace(/([.;?!])(?!\s*$)\s*/g, '$1\n');
+        return s.replace(/([.;])(?!\s*$)\s*/g, '$1\n');
   }
 
 async function loadBlocks() {
