@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://temporarily-injured-terrace-cab.trycloudflare.com/api/$1"
+      "destination": "https://tony-pure-perl-beginning.trycloudflare.com/api/$1"
     }
   ]
 }
